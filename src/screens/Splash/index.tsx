@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Image, Animated } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Animated,
+  ImageBackground,
+} from 'react-native';
 
 import { IMAGES } from '../../utils/constants';
 import { Colors } from '../../utils/color';
@@ -13,7 +20,7 @@ const SplashScreen = ({ onAnimationEnd }: { onAnimationEnd: () => void }) => {
     setTimeout(() => {
       Animated.timing(fadeAnim, {
         toValue: 0,
-        duration: 1000,
+        duration: 1500,
         useNativeDriver: true,
       }).start(() => {
         onAnimationEnd();
@@ -24,7 +31,10 @@ const SplashScreen = ({ onAnimationEnd }: { onAnimationEnd: () => void }) => {
     <Animated.View
       style={[styles.container, { transform: [{ translateY: fadeAnim }] }]}
     >
-      <Image source={IMAGES.foxAI} style={styles.splash}></Image>
+      <ImageBackground
+        source={IMAGES.logo}
+        style={styles.splash}
+      ></ImageBackground>
     </Animated.View>
   );
 };
@@ -32,18 +42,13 @@ const SplashScreen = ({ onAnimationEnd }: { onAnimationEnd: () => void }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
     alignItems: 'center',
-
-    paddingVertical: Spacing.xxlarge,
-    paddingHorizontal: Spacing.large,
   },
   splash: {
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
-    marginVertical: Spacing.xxlarge,
-    marginHorizontal: Spacing.large,
   },
 });
 

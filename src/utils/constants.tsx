@@ -32,6 +32,7 @@ export const ICONS = {
 };
 
 export const IMAGES = {
-  foxAI: require('../assets/images/company-logo.png'),
+  logo: require('../assets/images/coffee.jpg'),
   avtar: require('../assets/images/avt_male.jpg'),
+  background: require('../assets/images/background.jpg'),
 };
