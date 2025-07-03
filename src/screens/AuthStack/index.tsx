@@ -8,35 +8,31 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { IMAGES } from '../../utils/constants'; // chứa require ảnh nền
 import { Spacing } from '../../utils/spacing';
 import { Colors } from '../../utils/color';
 import { Fonts } from '../../utils/fontSize';
-import { useDispatch } from 'react-redux';
-import { setToken, setUserData } from '../../store/reducers/userSlice';
+import { navigate } from '../../navigation/RootNavigator';
+import { Screen_Name } from '../../navigation/ScreenName';
+import { loginWithEmail } from '../../services/authService';
+import AppInput from '../../components/AppInput';
+import AppStyles from '../../components/AppStyle';
+import styles from './styles';
 
 const LoginScreen = () => {
-  const dispatch = useDispatch();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [canLogin, setCanlogin] = useState(false);
-  const handleLogin = () => {
-    const token = '123abc1';
 
-    console.log('Login with:', username, password);
-    // TODO: Gọi API hoặc dispatch action tại đây
-    dispatch(
-      setUserData({
-        userData: {
-          username,
-          password,
-          token,
-          fullname: 'User Test',
-        },
-      }),
-    );
-    dispatch(setToken({ token }));
+  const handleLogin = async () => {
+    try {
+      const user = await loginWithEmail(email, password);
+      console.log('data', user);
+      // TODO: Navigate to HomeScreen
+    } catch (error: any) {
+      Alert.alert('Lỗi', error.message);
+    }
   };
 
   return (
@@ -50,102 +46,97 @@ const LoginScreen = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <View style={styles.loginWrap}>
-          <Text style={styles.title}>Login</Text>
-
-          <View>
-            <Text style={styles.lableText}>Username</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Username"
-              placeholderTextColor="#ccc"
-              value={username}
-              onChangeText={setUsername}
+          <Text style={styles.title}>Welcome</Text>
+          <View style={styles.inputGroup}>
+            <AppInput
+              label="Email"
+              placeholder="Enter email"
+              onChangeText={setEmail}
+              value={email}
             />
-          </View>
-
-          <View>
-            <Text style={styles.lableText}>Password</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Password"
-              placeholderTextColor="#ccc"
-              value={password}
+            <AppInput
+              label="Password"
+              placeholder="Enter password"
               onChangeText={setPassword}
+              value={password}
+              secureTextEntry
             />
           </View>
-
           <TouchableOpacity
-            disabled={!(password && username)}
-            style={password && username ? styles.button : styles.buttonDisable}
-            onPress={handleLogin}
+            disabled={!(password && email)}
+            style={password && email ? styles.button : styles.buttonDisable}
+            onPress={() => handleLogin()}
           >
             <Text style={styles.buttonText}>Đăng nhập</Text>
           </TouchableOpacity>
+
+          <View>
+            <TouchableOpacity
+              onPress={() => navigate(Screen_Name.Register_Screen)}
+            >
+              <Text style={AppStyles.linkText}>New user? Sign up</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </ImageBackground>
   );
 };
 
-const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignContent: 'center',
-    paddingHorizontal: 30,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)', // overlay nhẹ
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#000',
-    marginBottom: Spacing.large,
-    textAlign: 'center',
-  },
-  input: {
-    height: 50,
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    borderRadius: 20,
-    paddingHorizontal: Spacing.medium,
-    marginBottom: Spacing.medium,
-    color: '#000',
-  },
-  button: {
-    backgroundColor: '#1E90FF',
-    paddingVertical: Spacing.medium,
-    borderRadius: 20,
-    marginTop: Spacing.large,
-  },
-  buttonDisable: {
-    backgroundColor: Colors.lightGray,
-    paddingVertical: Spacing.medium,
-    borderRadius: 20,
-    marginTop: Spacing.large,
-    opacity: 0.5,
-  },
-  lableText: {
-    color: Colors.white,
-    fontSize: Fonts.large,
-    marginBottom: Spacing.small,
-    paddingHorizontal: Spacing.small,
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  loginWrap: {
-    paddingVertical: Spacing.xlarge,
-    paddingHorizontal: Spacing.medium,
-    borderRadius: 50,
-    backgroundColor: 'rgba(250, 247, 247, 0.7)', // overlay nhẹ
-  },
-});
+// const styles = StyleSheet.create({
+//   background: {
+//     flex: 1,
+//     width: '100%',
+//     height: '100%',
+//   },
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignContent: 'center',
+//     paddingHorizontal: 30,
+//     backgroundColor: 'rgba(0, 0, 0, 0.2)', // overlay nhẹ
+//   },
+//   title: {
+//     fontSize: 32,
+//     fontWeight: 'bold',
+//     color: Colors.white,
+//     marginBottom: Spacing.medium,
+//     textAlign: 'center',
+//   },
+//   inputGroup: {
+//     marginBottom: Spacing.medium,
+//   },
+//   button: {
+//     backgroundColor: '#1E90FF',
+//     paddingVertical: Spacing.medium,
+//     borderRadius: 20,
+//     marginBottom: Spacing.medium,
+//   },
+//   buttonDisable: {
+//     backgroundColor: Colors.lightGray,
+//     paddingVertical: Spacing.medium,
+//     borderRadius: 20,
+//     marginBottom: Spacing.medium,
+//     opacity: 0.5,
+//   },
+//   lableText: {
+//     color: Colors.white,
+//     fontSize: Fonts.large,
+//     marginBottom: Spacing.small,
+//     paddingHorizontal: Spacing.small,
+//   },
+//   buttonText: {
+//     color: '#fff',
+//     textAlign: 'center',
+//     fontWeight: 'bold',
+//     fontSize: 16,
+//   },
+//   loginWrap: {
+//     paddingVertical: Spacing.xlarge,
+//     paddingHorizontal: Spacing.medium,
+//     borderRadius: 50,
+//     backgroundColor: 'rgba(0, 0, 0, 0.2)',
+//   },
+// });
 
 export default LoginScreen;

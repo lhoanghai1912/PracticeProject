@@ -1,24 +1,25 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
 import { navigationRef } from './RootNavigator';
 import AuthNavigator from './AuthNavigator';
 import HomeNavigator from './HomeNavigator';
-import { useSelector } from 'react-redux';
 import SplashScreen from '../screens/Splash';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import LoginScreen from '../screens/AuthStack';
+import auth from '@react-native-firebase/auth';
+
 const AppNavigator = () => {
   const [showSplash, setShowSplash] = useState(true);
-  const { token } = useSelector((state: any) => state.user);
-  console.log(token, 'token in AppNavigator');
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    // delay splash 1.5s để hiển thị logo
-    const timeout = setTimeout(() => {
-      setShowSplash(false);
-    }, 1500);
-    return () => clearTimeout(timeout);
+    const unsubscribe = auth().onAuthStateChanged(user => {
+      if (user) {
+        setUserId(user.uid);
+      } else {
+        setUserId(null);
+      }
+    });
+
+    return unsubscribe;
   }, []);
 
   if (showSplash) {
@@ -27,7 +28,7 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer ref={navigationRef}>
-      {token ? <HomeNavigator /> : <AuthNavigator />}
+      {userId ? <HomeNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };

@@ -35,4 +35,5 @@ export const IMAGES = {
   logo: require('../assets/images/coffee.jpg'),
   avtar: require('../assets/images/avt_male.jpg'),
   background: require('../assets/images/background.jpg'),
+  promo: require('../assets/images/promo.jpg'),
 };
