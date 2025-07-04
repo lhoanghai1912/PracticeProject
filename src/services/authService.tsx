@@ -12,7 +12,6 @@ import { getApp } from '@react-native-firebase/app';
 const app = getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
-
 // Đăng ký người dùng với email và mật khẩu
 export const registerWithEmail = async (email: string, password: string) => {
   try {

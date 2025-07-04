@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, Image } from 'react-native';
 
 // Các màn hình cho các tab
-import TopSaleScreen from '../screens/HomeStack/TopSale';
+import TopSaleScreen from '../screens/HomeStack/Favourite';
 import CartScreen from '../screens/HomeStack/Cart';
 import NotiScreen from '../screens/HomeStack/Noti';
 import HomeScreen from '../screens/HomeStack';
@@ -29,16 +29,16 @@ const BottomTabNavigator = () => {
           // Chọn icon dựa trên tên route
           switch (route.name) {
             case 'Home':
-              iconSource = !focused ? ICONS.hide : ICONS.show;
+              iconSource = !focused ? ICONS.home : ICONS.home_focus;
               break;
             case 'Heart':
-              iconSource = !focused ? ICONS.hide : ICONS.show;
+              iconSource = !focused ? ICONS.heart : ICONS.heart_focus;
               break;
             case 'Cart':
-              iconSource = !focused ? ICONS.hide : ICONS.show;
+              iconSource = !focused ? ICONS.cart : ICONS.cart_focus;
               break;
             case 'Notification':
-              iconSource = !focused ? ICONS.hide : ICONS.show;
+              iconSource = !focused ? ICONS.noti : ICONS.noti_focus;
               break;
             default:
               iconSource = ICONS.hide;

@@ -4,7 +4,9 @@ import HomeScreen from '../screens/HomeStack';
 import BottomTabNavigator from './BottomTabNavigator';
 import CartScreen from '../screens/HomeStack/Cart';
 import NotiScreen from '../screens/HomeStack/Noti';
-import TopSaleScreen from '../screens/HomeStack/TopSale';
+import TopSaleScreen from '../screens/HomeStack/Favourite';
+import DetailScreen from '../screens/HomeStack/Details';
+import FavouriteScreen from '../screens/HomeStack/Favourite';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,8 +24,12 @@ const HomeNavigator = () => {
       <Stack.Screen name={Screen_Name.Cart_Screen} component={CartScreen} />
       <Stack.Screen name={Screen_Name.Noti_Screen} component={NotiScreen} />
       <Stack.Screen
-        name={Screen_Name.Top_SaleScreen}
-        component={TopSaleScreen}
+        name={Screen_Name.Favourite_Screen}
+        component={FavouriteScreen}
+      />
+      <Stack.Screen
+        name={Screen_Name.Details_Screen}
+        component={DetailScreen}
       />
     </Stack.Navigator>
   );
