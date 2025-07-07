@@ -18,6 +18,7 @@ interface AppButtonProps {
   title: string; // Tiêu đề nút
   customStyle?: ViewStyle[]; // Custom style cho nút
   disabled?: boolean;
+  select?: boolean;
 }
 
 const AppButton: React.FC<AppButtonProps> = ({
@@ -26,6 +27,7 @@ const AppButton: React.FC<AppButtonProps> = ({
   title,
   customStyle = [],
   disabled,
+  select,
 }) => {
   return (
     <TouchableOpacity
@@ -34,6 +36,7 @@ const AppButton: React.FC<AppButtonProps> = ({
       onPress={onPress}
       style={[
         disabled ? styles.buttonDisabled : styles.button,
+        select === true ? styles.button : styles.notSelectedButton,
         ...customStyle,
         { opacity: disabled ? 0.5 : 1 },
       ]}
@@ -41,7 +44,7 @@ const AppButton: React.FC<AppButtonProps> = ({
       <Text
         style={[
           styles.buttonText,
-          { color: disabled ? Colors.black : Colors.white },
+          { color: disabled || select === false ? Colors.black : Colors.white },
         ]}
       >
         {title}
@@ -55,6 +58,21 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: Colors.primary,
     borderRadius: 20,
+    justifyContent: 'center',
+    alignContent: 'center',
+    paddingVertical: Spacing.small,
+    paddingHorizontal: Spacing.medium,
+    height: 50,
+    shadowColor: Colors.primary,
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+  },
+  notSelectedButton: {
+    backgroundColor: Colors.white,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.lightGray,
     justifyContent: 'center',
     alignContent: 'center',
     paddingVertical: Spacing.small,

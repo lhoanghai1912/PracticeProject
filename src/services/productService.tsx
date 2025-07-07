@@ -26,6 +26,7 @@ export const fetchProducts = async () => {
         rate: data.rate,
         rater: data.rater,
         description: data.description,
+        images: data.images,
       };
     });
     return productsList;
@@ -35,22 +36,34 @@ export const fetchProducts = async () => {
   }
 };
 export const addCake = async (
-  cakeData: { name: string; type: string; description: string }[],
+  cakeData: {
+    name: string;
+    type: string;
+    description: string;
+    images: string;
+  }[],
 ) => {
   try {
-    for (const { name, type, description } of cakeData) {
-      const price = (Math.random() * (7 - 5) + 5).toFixed(2); // Giá ngẫu nhiên từ 5 đến 7
+    for (const { name, type, description, images } of cakeData) {
       const rate = (Math.random() * (5 - 4.7) + 4.7).toFixed(2); // Giá ngẫu nhiên từ 4.7 đến 5
       const rater = Math.floor(Math.random() * 200) + 1; // Giá ngẫu nhiên từ 4.7 đến 5
+      const small = Math.floor(Math.random() * (4.5 - 3) + 3).toFixed(2);
+      const medium = Math.floor(Math.random() * (6 - 4.5) + 4.6).toFixed(2);
+      const large = Math.floor(Math.random() * (7.5 - 6) + 6).toFixed(2);
       // Thêm bánh vào Firestore
       const docRef = await addDoc(collection(db, 'products'), {
         name: name,
         type: type, // Loại là 'Cake'
         productType: 'cake',
-        price: parseFloat(price), // Chuyển giá thành số thực
+        price: {
+          small: parseFloat(small),
+          medium: parseFloat(medium),
+          large: parseFloat(large),
+        },
         rate: parseFloat(rate),
         rater: rater,
         description: description,
+        images: images,
       });
 
       console.log('Cake added with ID: ', docRef.id);
@@ -61,23 +74,34 @@ export const addCake = async (
 };
 
 export const addCoffee = async (
-  coffeeData: { name: string; type: string; description: string }[],
+  coffeeData: {
+    name: string;
+    type: string;
+    description: string;
+    images: string;
+  }[],
 ) => {
   try {
-    for (const { name, type, description } of coffeeData) {
-      const price = (Math.random() * (7 - 5) + 5).toFixed(2); // Giá ngẫu nhiên từ 5 đến 7
+    for (const { name, type, description, images } of coffeeData) {
       const rate = (Math.random() * (5 - 4.7) + 4).toFixed(2); // Giá ngẫu nhiên từ 4.7 đến 5
       const rater = Math.floor(Math.random() * 200) + 1; // Giá ngẫu nhiên từ 4.7 đến 5
-
+      const small = (Math.random() * (4.5 - 3) + 3).toFixed(2);
+      const medium = (Math.random() * (6 - 4.5) + 4.6).toFixed(2);
+      const large = (Math.random() * (7.5 - 6) + 6).toFixed(2);
       // Thêm cafe vào Firestore
       const docRef = await addDoc(collection(db, 'products'), {
         name: name,
         type: type, // Loại là 'coffee'
         productType: 'coffee',
-        price: parseFloat(price), // Chuyển giá thành số thực
+        price: {
+          small: parseFloat(small),
+          medium: parseFloat(medium),
+          large: parseFloat(large),
+        },
         rate: parseFloat(rate),
         rater: rater,
         description: description,
+        images: images,
       });
 
       console.log('Coffee added with ID: ', docRef.id);

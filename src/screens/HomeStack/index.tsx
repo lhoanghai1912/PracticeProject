@@ -9,6 +9,7 @@ import {
   ImageBackground,
   FlatList,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import { Colors } from '../../utils/color';
 import AppStyles from '../../components/AppStyle';
@@ -21,7 +22,6 @@ import {
   fetchProducts,
 } from '../../services/productService';
 import Toast from 'react-native-toast-message';
-import { log } from '@react-native-firebase/crashlytics';
 import { navigate } from '../../navigation/RootNavigator';
 import { Screen_Name } from '../../navigation/ScreenName';
 import { cakeData, coffeeData } from './dataProduct';
@@ -35,13 +35,14 @@ interface Product {
   rate: number;
   rater: number;
   description: string;
+  images: string;
 }
 
 const HomeScreen = () => {
   const [selectedType, setSelectedType] = useState('All');
   const [products, setProducts] = useState<Product[]>([]); // State để lưu dữ liệu sản phẩm
   const [loading, setLoading] = useState(true);
-
+  const [findValue, setFindValue] = useState('');
   const handleAddCake = async () => {
     try {
       await addCake(cakeData); // Gọi hàm addCake để thêm các sản phẩm cà phê vào Firestore
@@ -117,12 +118,22 @@ const HomeScreen = () => {
       return 0;
     });
 
-  const filteredProducts =
-    selectedType === 'All'
-      ? sortedProducts
-      : selectedType === 'Cake'
-      ? sortedProducts.filter(item => item.productType === 'cake')
-      : sortedProducts.filter(item => item.type === selectedType);
+  const filteredProducts = sortedProducts.filter(item => {
+    const matchType =
+      selectedType === 'All'
+        ? true
+        : selectedType === 'Cake'
+        ? item.productType.toLowerCase() === 'cake'
+        : item.type.toLowerCase() === selectedType.toLowerCase();
+
+    const matchKeyword =
+      findValue.trim() === ''
+        ? true
+        : item.name.toLowerCase().includes(findValue.toLowerCase()) ||
+          item.type.toLowerCase().includes(findValue.toLowerCase());
+
+    return matchType && matchKeyword;
+  });
 
   if (loading) {
     return (
@@ -141,6 +152,7 @@ const HomeScreen = () => {
       productRate: item.rate,
       productRater: item.rater,
       productDescription: item.description,
+      productImages: item.images,
     });
   };
   const renderItem = ({ item }: any) => {
@@ -149,7 +161,7 @@ const HomeScreen = () => {
         <TouchableOpacity onPress={() => handleDetail(item)}>
           <View>
             <Image
-              source={item.productType === 'cake' ? IMAGES.cake : IMAGES.logo} // Hiển thị hình ảnh nếu có
+              source={IMAGES[item.images as keyof typeof IMAGES]} // Hiển thị hình ảnh nếu có
               style={styles.productImage}
             />
           </View>
@@ -164,7 +176,7 @@ const HomeScreen = () => {
               alignItems: 'center',
             }}
           >
-            <Text style={styles.productPrice}>{`$ ${item.price}`}</Text>
+            <Text style={styles.productPrice}>{`$ ${item.price.medium}`}</Text>
             <TouchableOpacity onPress={() => console.log('add to cart')}>
               <Image source={ICONS.add} style={{ width: 40, height: 40 }} />
             </TouchableOpacity>
@@ -176,11 +188,32 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={{ marginBottom: Spacing.medium }}>
-          <Text style={AppStyles.label}>Location</Text>
-          <TouchableOpacity>
-            <Text style={[AppStyles.text, { color: Colors.white }]}>abc</Text>
-          </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            // alignItems: 'center',
+          }}
+        >
+          <View style={{ marginBottom: Spacing.medium }}>
+            <Text style={AppStyles.label}>Location</Text>
+            <TouchableOpacity>
+              <Text style={[AppStyles.text, { color: Colors.white }]}>abc</Text>
+            </TouchableOpacity>
+          </View>
+          <View>
+            <TouchableOpacity>
+              <Image
+                source={IMAGES.avtar}
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 50,
+                  resizeMode: 'contain',
+                }}
+              ></Image>
+            </TouchableOpacity>
+          </View>
         </View>
         <View
           style={{
@@ -196,20 +229,26 @@ const HomeScreen = () => {
                 height: 50,
                 borderRadius: 10,
                 flex: 1,
-                marginRight: Spacing.medium,
                 backgroundColor: 'rgba(45, 45, 45, 0.9)',
+                flexDirection: 'row',
+                alignItems: 'center',
               },
             ]}
-          ></View>
-          <TouchableOpacity style={{ justifyContent: 'center' }}>
+          >
             <Image
-              source={ICONS.scan}
-              style={[
-                AppStyles.icon,
-                { backgroundColor: Colors.lightGray, height: 50, width: 50 },
-              ]}
-            ></Image>
-          </TouchableOpacity>
+              source={ICONS.loupe}
+              style={[AppStyles.icon, { marginHorizontal: Spacing.small }]}
+            />
+            <View>
+              <TextInput
+                placeholder="Find your coffee ..."
+                placeholderTextColor={Colors.Gray}
+                value={findValue}
+                onChangeText={setFindValue}
+                style={{ color: Colors.white }}
+              ></TextInput>
+            </View>
+          </View>
         </View>
 
         <ImageBackground
@@ -312,12 +351,14 @@ const HomeScreen = () => {
         />
       </View>
 
-      <View style={{ display: 'none' }}>
+      {/* <View style={{ display: 'none' }}> */}
+      <View style={{ display: 'flex' }}>
         <TouchableOpacity onPress={() => handleAddCake()}>
           <Text>add cake</Text>
         </TouchableOpacity>
       </View>
-      <View style={{ display: 'none' }}>
+      {/* <View style={{ display: 'none' }}> */}
+      <View style={{ display: 'flex' }}>
         <TouchableOpacity onPress={() => handleAddCoffee()}>
           <Text>add coffee</Text>
         </TouchableOpacity>

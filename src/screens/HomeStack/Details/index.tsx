@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+} from 'react-native';
 import { Colors } from '../../../utils/color';
 import { ICONS, IMAGES } from '../../../utils/constants';
 import { navigate } from '../../../navigation/RootNavigator';
@@ -8,11 +15,32 @@ import AppStyles from '../../../components/AppStyle';
 import { Spacing } from '../../../utils/spacing';
 import { Fonts } from '../../../utils/fontSize';
 import AppButton from '../../../components/AppButton';
+import { log } from '@react-native-firebase/crashlytics';
 
 const DetailScreen: React.FC = ({ route, navigation }: any) => {
   const data = route.params;
   console.log('Product details:', route.params);
   console.log('name', data.productName);
+  console.log('images', data.productImages);
+
+  const [selectedPrice, setSelectedPrice] = React.useState<number>(
+    data?.productPrice?.medium ?? 0,
+  );
+  const [selectedSize, setSelectedSize] = React.useState<
+    'S' | 'M' | 'L' | null
+  >('M');
+
+  const handleSelectSize = (size: 'S' | 'M' | 'L') => {
+    size ? setSelectedSize(size) : setSelectedSize('M');
+
+    if (size === 'S') {
+      setSelectedPrice(data.productPrice.small);
+    } else if (size === 'M') {
+      setSelectedPrice(data.productPrice.medium);
+    } else if (size === 'L') {
+      setSelectedPrice(data.productPrice.large);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -36,82 +64,88 @@ const DetailScreen: React.FC = ({ route, navigation }: any) => {
       </View>
       <View style={styles.body}>
         <Image
-          source={data.productType === 'coffee' ? IMAGES.logo : IMAGES.cake}
+          source={IMAGES[data.productImages as keyof typeof IMAGES]} // Hiển thị hình ảnh nếu có
           style={{
-            height: 250,
+            height: 300,
             width: '100%',
+            alignSelf: 'center',
             borderRadius: 20,
             marginBottom: Spacing.medium,
-            alignItems: 'center',
+            // resizeMode: 'contain',
           }}
         />
-        <View style={{ marginBottom: Spacing.medium }}>
-          <Text style={styles.label}>{data.productName}</Text>
-          <Text style={styles.text}>{data.productType}</Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            height: 'auto',
-            alignItems: 'center',
-            marginBottom: Spacing.large,
-          }}
-        >
-          <Image source={ICONS.rate} style={{ width: 30, height: 30 }} />
+        <ScrollView>
+          <View style={{ marginBottom: Spacing.medium }}>
+            <Text style={styles.label}>{data.productName}</Text>
+            <Text style={styles.text}>{data.productType}</Text>
+          </View>
           <View
             style={{
               flexDirection: 'row',
+              height: 'auto',
+              alignItems: 'center',
+              marginBottom: Spacing.large,
             }}
           >
-            <Text style={styles.rate}>{` ${data.productRate}`}</Text>
-            <Text style={styles.rater}>{` (${data.productRater})`}</Text>
+            <Image source={ICONS.rate} style={{ width: 30, height: 30 }} />
+            <View
+              style={{
+                flexDirection: 'row',
+              }}
+            >
+              <Text style={styles.rate}>{` ${data.productRate}`}</Text>
+              <Text style={styles.rater}>{` (${data.productRater})`}</Text>
+            </View>
           </View>
-        </View>
-        <View
-          style={{
-            borderWidth: 0.5,
-            borderColor: Colors.secondary,
-            marginHorizontal: Spacing.large,
-            marginBottom: Spacing.large,
-          }}
-        />
-        <View style={{ marginBottom: Spacing.large }}>
-          <Text style={[styles.label, { marginBottom: Spacing.medium }]}>
-            Description
-          </Text>
-          <Text style={styles.text}>{data.productDescription}</Text>
-        </View>
-        <View style={{ marginBottom: Spacing.large }}>
-          <Text style={[styles.label, { marginBottom: Spacing.medium }]}>
-            Size
-          </Text>
           <View
-            style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-          >
-            <AppButton
-              title="S"
-              onPress={() => console.log('pressed a')}
-              customStyle={[{ width: '28%' }]}
-            />
-            <AppButton
-              title="M"
-              onPress={() => console.log('pressed a')}
-              customStyle={[{ width: '28%' }]}
-            />
-            <AppButton
-              title="L"
-              onPress={() => console.log('pressed a')}
-              customStyle={[{ width: '28%' }]}
-            />
+            style={{
+              borderWidth: 0.5,
+              borderColor: Colors.secondary,
+              marginHorizontal: Spacing.large,
+              marginBottom: Spacing.large,
+            }}
+          />
+          <View style={{ marginBottom: Spacing.large }}>
+            <Text style={[styles.label, { marginBottom: Spacing.medium }]}>
+              Description
+            </Text>
+            <Text style={styles.text}>{data.productDescription}</Text>
           </View>
-        </View>
+          <View style={{ marginBottom: Spacing.large }}>
+            <Text style={[styles.label, { marginBottom: Spacing.medium }]}>
+              Size
+            </Text>
+            <View
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+            >
+              <AppButton
+                title="S"
+                select={selectedSize === 'S'}
+                onPress={() => handleSelectSize('S')}
+                customStyle={[{ width: '28%' }]}
+              />
+              <AppButton
+                title="M"
+                select={selectedSize === 'M'}
+                onPress={() => handleSelectSize('M')}
+                customStyle={[{ width: '28%' }]}
+              />
+              <AppButton
+                title="L"
+                select={selectedSize === 'L'}
+                onPress={() => handleSelectSize('L')}
+                customStyle={[{ width: '28%' }]}
+              />
+            </View>
+          </View>
+        </ScrollView>
       </View>
       <View style={styles.footer}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <View>
             <Text style={[styles.text, { fontSize: Fonts.large }]}>Price</Text>
             <Text style={[styles.label, { color: Colors.primary }]}>
-              {`$ ${data.productPrice}`}
+              {`$ ${selectedPrice}`}
             </Text>
           </View>
           <TouchableOpacity
@@ -141,9 +175,7 @@ const DetailScreen: React.FC = ({ route, navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   header: {
     flex: 0.2,
     justifyContent: 'flex-end',
@@ -173,7 +205,7 @@ const styles = StyleSheet.create({
   size: {},
   price: {},
   footer: {
-    flex: 0.22,
+    flex: 0.15,
     backgroundColor: Colors.white,
     borderRadius: 20,
     paddingHorizontal: Spacing.large,
